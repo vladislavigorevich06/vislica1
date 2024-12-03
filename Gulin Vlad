@@ -1,0 +1,57 @@
+# Функция для игры
+def play_hangman():
+    word = choose_word()  # Получаем случайное слово
+    word_completion = "_" * len(word)  # Создаем строку из символов "_", равную длине слова
+    guessed = False  # Флаг, обозначающий, угадано ли слово
+    guessed_letters = []  # Список уже названных букв
+    guessed_words = []  # Список уже названных слов
+    tries = 6  # Количество попыток
+
+    print("Добро пожаловать в игру 'Виселица'!")
+    print(display_hangman(tries))  # Показываем начальную стадию виселицы
+    print(word_completion)  # Показываем скрытое слово
+    print("\n")
+
+    # Основной игровой цикл
+    while not guessed and tries > 0:
+        guess = input("Введите букву или слово целиком: ").upper()  # Получаем ввод игрока
+        if len(guess) == 1 and guess.isalpha():  # Если ввод - одна буква
+            if guess in guessed_letters:
+                print(f"Вы уже называли букву {guess}.")  # Буква уже была названа
+            elif guess not in word:
+                print(f"Буквы {guess} нет в слове.")  # Буква отсутствует в слове
+                tries -= 1  # Уменьшаем количество попыток
+                guessed_letters.append(guess)  # Добавляем букву в список
+            else:
+                print(f"Отлично! Буква {guess} есть в слове.")  # Буква есть в слове
+                guessed_letters.append(guess)  # Добавляем букву в список
+                # Открываем все позиции буквы в слове
+                word_as_list = list(word_completion)
+                indices = [i for i, letter in enumerate(word) if letter == guess]
+                for index in indices:
+                    word_as_list[index] = guess
+                word_completion = "".join(word_as_list)
+                if "_" not in word_completion:  # Если больше нет "_", слово угадано
+                    guessed = True
+        elif len(guess) == len(word) and guess.isalpha():  # Если ввод - слово
+            if guess in guessed_words:
+                print(f"Вы уже пробовали слово {guess}.")  # Слово уже было названо
+            elif guess != word:
+                print(f"Слово {guess} неверное.")  # Слово неверное
+                tries -= 1  # Уменьшаем количество попыток
+                guessed_words.append(guess)  # Добавляем слово в список
+            else:
+                guessed = True  # Слово угадано
+                word_completion = word
+        else:
+            print("Неверный ввод. Попробуйте снова.")  # Сообщение об ошибке ввода
+
+        print(display_hangman(tries))  # Обновляем виселицу
+        print(word_completion)  # Обновляем слово
+        print("\n")
+
+    # Итоги игры
+    if guessed:
+        print(f"Поздравляем, вы угадали слово {word}!")
+    else:
+        print(f"Вы проиграли. Загаданное слово было: {word}")
